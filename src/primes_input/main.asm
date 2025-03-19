@@ -38,23 +38,56 @@ PROGRAM_HEADER:
 	dq LOAD_ADDRESS+0x78
 	dq 0x0000000000000000
 	dq CODE_SIZE
-	dq CODE_SIZE+PRINT_BUFFER_SIZE
+	dq CODE_SIZE+PRINT_BUFFER_SIZE	
 	dq 0x0000000000000000
 
 ;;;;;;;;includes;;;;;;;;;
 
 %include "lib/io/print_string.asm"
 %include "lib/io/print_int_d.asm"
+%include "lib/io/scan_string.asm"
 
 ;;;;;;;;instructions;;;;;;;;
 
 START:
 
+	mov rsi,INPUT_PROMPT
+	call print_string
+	call print_buffer_flush
+
+.limit_input:
+	mov rsi,USER_INPUT_START
+	call scan_string
+	mov rsi,USER_INPUT_START
+	
+	mov rdx,-1
+
+.get_strlen:
+	inc rdx
+	cmp byte [rsi+rdx],0
+	jne .get_strlen
+	
+	cmp rdx,5
+	jg .verify_string
+	
+	mov rsi,INVALID_INPUT
+	call print_string
+	call print_buffer_flush
+	jmp .limit_input
+
+.verify_string:
+	
+	call print_string
+	mov rsi,NEWLINE
+	mov rax,rdx
+	call print_int_d
+	call print_string
+
 	;;;COUNTING PRIMES;;;
 
 	mov rax,[CURRENT_NUM]  	;num to be checked
 	mov rdi,2  		;divider
-	mov rcx,1000  		;how many primes to count
+	mov rcx,2  		;how many primes to count
 	mov rdx,0
 	mov rsi,SPACES
 
@@ -106,6 +139,14 @@ NEWLINE:
 
 CURRENT_NUM:
 	dq 2
+
+INPUT_PROMPT:
+	db "INPUT THE NUMBER OF PRIMES WANTED",10,0
+
+INVALID_INPUT:
+	db "INVALID INPUT TRY AGAIN",10,0
+
+USER_INPUT_START:
 
 END:
 
