@@ -67,6 +67,18 @@ START:
 	mov rdi,1
 
 	call print_string
+
+	mov rsi,NEWLINE
+	
+	mov rax,[SOME_NUM]
+	call print_int_d
+	call print_string
+	inc rax
+	mov [SOME_NUM],rax
+	mov rax,[SOME_NUM]
+	call print_int_d
+	call print_string
+
 	call print_buffer_flush
 
 
@@ -81,6 +93,9 @@ START:
 
 NEWLINE:
 	db 10,0
+
+SOME_NUM:
+	dq 10
 
 INPUT_STRING:
 

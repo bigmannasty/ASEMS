@@ -52,13 +52,11 @@ START:
 
 	;;;COUNTING PRIMES;;;
 
-	mov rax,2  		;num to be checked
+	mov rax,[CURRENT_NUM]  	;num to be checked
 	mov rdi,2  		;divider
-	mov rcx,100  		;how many primes to count
+	mov rcx,1000  		;how many primes to count
 	mov rdx,0
 	mov rsi,SPACES
-
-	push rax
 
 .prime_loop:
 	cmp rcx,0  		;check if the counter has hit 0 yet
@@ -71,8 +69,7 @@ START:
 
 .is_prime:
 	dec rcx			;dec rcx
-	pop rax
-	push rax
+	mov rax,[CURRENT_NUM]
 	call print_int_d	;print the num
 	call print_string	;new line
 	jmp .next_num		;onto the next num
@@ -80,16 +77,15 @@ START:
 .next_div:
 	cmp rax,rdi  		;check if the divider is bigger than the result
 	jl .is_prime		;if it is then the .is_prime block is exectued
-	pop rax  		;retrieve current prime cand. from stack
-	push rax  		;push it back on
+	mov rax,[CURRENT_NUM] 	;retrieve current prime cand. from var
 	inc rdi  		;inc the divider
 	jmp .prime_loop  	;back to loop
 
 
 .next_num:
-	pop rax  		;retrieve current prime cand.
+	mov rax,[CURRENT_NUM] 	;retrieve current prime cand.
 	inc rax  		;increment to next cand.
-	push rax  		;save it to the stack
+	mov [CURRENT_NUM],rax  	;save it to the var
 	mov rdi,2  		;reset the divider to 2
 	jmp .prime_loop  	;jump back to the prime loop
 
@@ -107,6 +103,9 @@ SPACES:
 
 NEWLINE:
 	db 10,0
+
+CURRENT_NUM:
+	dq 2
 
 END:
 

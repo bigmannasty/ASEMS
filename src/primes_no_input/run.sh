@@ -1,6 +1,6 @@
 #!/bin/bash
 
-nasm -I /home/root/vbs/stuf/asm -o main test.asm
+nasm -I /home/root/vbs/stuf/asm -o main main.asm
 
 if [[ -x main ]]
 then
