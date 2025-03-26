@@ -54,9 +54,13 @@ START:
 
 	mov rax,[CURRENT_NUM]  	;num to be checked
 	mov rdi,2  		;divider
-	mov rcx,1000  		;how many primes to count
+	mov rcx,10  		;how many primes to count
 	mov rdx,0
 	mov rsi,SPACES
+	
+	call print_int_d
+	call print_string
+	dec rcx
 
 .prime_loop:
 	cmp rcx,0  		;check if the counter has hit 0 yet

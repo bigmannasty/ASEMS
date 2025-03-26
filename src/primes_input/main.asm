@@ -43,31 +43,33 @@ PROGRAM_HEADER:
 
 ;;;;;;;;includes;;;;;;;;;
 
+%include "lib/io/print_chars.asm"
 %include "lib/io/print_string.asm"
 %include "lib/io/print_int_d.asm"
 %include "lib/io/scan_string.asm"
+%include "lib/string/char_to_int.asm"
 
 ;;;;;;;;instructions;;;;;;;;
 
 START:
 
-	mov rsi,INPUT_PROMPT
+	mov rsi,INPUT_PROMPT	;input prompt for user
 	call print_string
 	call print_buffer_flush
 
 .limit_input:
-	mov rsi,USER_INPUT_START
+	mov rsi,USER_INPUT 	;scan user input from terminal
 	call scan_string
-	mov rsi,USER_INPUT_START
 	
 	mov rdx,-1
 
 .get_strlen:
 	inc rdx
-	cmp byte [rsi+rdx],0
+	cmp byte [rsi+rdx],10
 	jne .get_strlen
 	
-	cmp rdx,5
+	mov byte [rsi+rdx],0
+	cmp rdx,0
 	jg .verify_string
 	
 	mov rsi,INVALID_INPUT
@@ -77,19 +79,26 @@ START:
 
 .verify_string:
 	
-	call print_string
 	mov rsi,NEWLINE
-	mov rax,rdx
-	call print_int_d
 	call print_string
-
+	
+	mov rsi,USER_INPUT	;move input num into rsi and call converter
+	call char_to_int
+	cmp rax,0		;if rax is 0, means error
+	je .exit
+	mov rcx,rax		;move converted output in rax into rcx
+	
+	
 	;;;COUNTING PRIMES;;;
 
-	mov rax,[CURRENT_NUM]  	;num to be checked
+	mov rax,2	  	;num to be checked
 	mov rdi,2  		;divider
-	mov rcx,2  		;how many primes to count
 	mov rdx,0
 	mov rsi,SPACES
+
+	call print_int_d
+	call print_string
+	dec rcx
 
 .prime_loop:
 	cmp rcx,0  		;check if the counter has hit 0 yet
@@ -124,6 +133,7 @@ START:
 
 
 .exit:
+
 	mov rsi,NEWLINE
 	call print_string
 	call print_buffer_flush
@@ -146,7 +156,8 @@ INPUT_PROMPT:
 INVALID_INPUT:
 	db "INVALID INPUT TRY AGAIN",10,0
 
-USER_INPUT_START:
+USER_INPUT:
+	db 0,0,0,0,0,0,0,0,0
 
 END:
 
