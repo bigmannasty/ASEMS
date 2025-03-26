@@ -95,7 +95,7 @@ NEWLINE:
 	db 10,0
 
 SOME_NUM:
-	dq 10
+	dq -10
 
 INPUT_STRING:
 
